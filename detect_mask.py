@@ -31,3 +31,18 @@ def detect_and_predict_mask (frame,faceNet,maskNet):
   locs = []
   preds = []
 
+  # loop over the detection
+  for i in range(0, detections.shape[2]):
+    # ectract the confidence (i.e. probability) associated with detection
+    confidence = detections[0, 0, i, 2]
+
+    # filter out weak detections by ensuring the confidence is greater than the minimum confidence
+    if confidence > 0.5:
+      # Compute the (x,y) -coordinates of the bounding box for the object
+      box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+      (startX, startY, endX, endY) = box.astype("int")
+
+      # ensure the bounding boxes fall with the dimention of frame
+      (startX, startY) = (max(0, startX), max(0, startY))
+      (endX, endY) = (min(w - 1, endX), min(h - 1, endY))
+
